@@ -1,0 +1,75 @@
+{
+  "name": "@a-funk/3d-graph",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pre-release extraction workspace for 3dGraph, a Three.js knowledge-graph exploration library.",
+  "type": "module",
+  "main": "./src/index.js",
+  "module": "./src/index.js",
+  "types": "./src/types.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/a-funk/3d-graph.git"
+  },
+  "bugs": {
+    "url": "https://github.com/a-funk/3d-graph/issues"
+  },
+  "homepage": "https://github.com/a-funk/3d-graph#readme",
+  "exports": {
+    ".": {
+      "types": "./src/types.d.ts",
+      "import": "./src/index.js"
+    },
+    "./graph": {
+      "types": "./src/types.d.ts",
+      "import": "./src/graph/index.js"
+    },
+    "./layouts": {
+      "types": "./src/types.d.ts",
+      "import": "./src/layouts/index.js"
+    },
+    "./controls": {
+      "types": "./src/types.d.ts",
+      "import": "./src/controls/index.js"
+    },
+    "./styles": {
+      "types": "./src/types.d.ts",
+      "import": "./src/styles/index.js"
+    }
+  },
+  "files": [
+    "src/",
+    "docs/",
+    "examples/",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": [
+    "three",
+    "threejs",
+    "3d",
+    "knowledge-graph",
+    "force-directed-graph",
+    "flight-controls",
+    "webgl",
+    "graph-visualization"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "d3-force-3d": ">=3.0.0",
+    "three": ">=0.160.0"
+  },
+  "peerDependenciesMeta": {
+    "d3-force-3d": {
+      "optional": true
+    },
+    "three": {
+      "optional": true
+    }
+  },
+  "sideEffects": false
+}
