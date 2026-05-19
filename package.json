@@ -9,12 +9,12 @@
   "types": "./src/types.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/a-funk/3d-graph.git"
+    "url": "git+https://github.com/a-funk/3dGraph.git"
   },
   "bugs": {
-    "url": "https://github.com/a-funk/3d-graph/issues"
+    "url": "https://github.com/a-funk/3dGraph/issues"
   },
-  "homepage": "https://github.com/a-funk/3d-graph#readme",
+  "homepage": "https://github.com/a-funk/3dGraph#readme",
   "exports": {
     ".": {
       "types": "./src/types.d.ts",
