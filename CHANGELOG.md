@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0
+
+- Added hostile-data regression tests for reserved IDs, unsafe labels, cyclic
+  metadata, large sparse graphs, dangling-edge policies, and malformed colors.
+- Added `traversalStep()` for app-owned keyboard traversal over neighboring
+  graph nodes.
+- Added clean consumer smoke coverage for npm-packed installs, subpath exports,
+  Vite builds, and TypeScript type-checking without casts.
+- Added GitHub Actions CI and Playwright visual smoke coverage for nonblank
+  desktop/mobile WebGL rendering, flight enter/exit, and destroy/recreate.
+- Hardened renderer color inputs so invalid node, edge, theme, and projectile
+  colors fall back safely.
+
 ## 0.2.0
 
 - Clarified pre-npm install guidance with exact GitHub commit pinning.

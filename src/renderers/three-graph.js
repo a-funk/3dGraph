@@ -46,6 +46,31 @@ function safeNow() {
   return globalThis.performance?.now?.() ?? Date.now();
 }
 
+function isSafeColorInput(value) {
+  if (typeof value === "number") return Number.isFinite(value) && value >= 0 && value <= 0xffffff;
+  if (typeof value !== "string") return false;
+  const text = value.trim();
+  if (!text) return false;
+  if (/^#(?:[\da-f]{3}|[\da-f]{4}|[\da-f]{6}|[\da-f]{8})$/i.test(text)) return true;
+  if (Object.hasOwn(THREE.Color.NAMES, text.toLowerCase())) return true;
+  return /^(?:rgb|rgba|hsl|hsla)\([\d\s,%.+-]+\)$/i.test(text);
+}
+
+export function resolveThreeColor(value, fallback = "#ffffff") {
+  const color = new THREE.Color();
+  const source = isSafeColorInput(value) ? value : fallback;
+  try {
+    color.set(source);
+  } catch {
+    color.set("#ffffff");
+  }
+  return color;
+}
+
+function colorKey(value, fallback) {
+  return `#${resolveThreeColor(value, fallback).getHexString()}`;
+}
+
 export class ThreeGraph {
   constructor(options = {}) {
     if (!options.container) throw new TypeError("create3dGraph requires a container element");
@@ -93,7 +118,7 @@ export class ThreeGraph {
       powerPreference: options.powerPreference || "high-performance",
     });
     this.renderer.setPixelRatio(Math.min(options.maxPixelRatio || 2, globalThis.devicePixelRatio || 1));
-    this.renderer.setClearColor(new THREE.Color(this.theme.background), options.alpha === true ? 0 : 1);
+    this.renderer.setClearColor(resolveThreeColor(this.theme.background, defaultTheme.background), options.alpha === true ? 0 : 1);
 
     this.scene = new THREE.Scene();
     const { width, height } = getSize(this.container);
@@ -123,7 +148,7 @@ export class ThreeGraph {
 
     this.projectileGeometry = new THREE.SphereGeometry(6, 10, 8);
     this.projectileMaterial = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(options.projectile?.color || this.theme.accent || "#ff7b3a"),
+      color: resolveThreeColor(options.projectile?.color || this.theme.accent, defaultTheme.accent),
       transparent: true,
       opacity: options.projectile?.opacity ?? 0.95,
     });
@@ -205,14 +230,14 @@ export class ThreeGraph {
       if (!this.isNodeVisible(node)) continue;
       const nodeStyle = this.nodeStyle(node);
       const geometry = GEOMETRIES[nodeStyle.geometry] ? nodeStyle.geometry : "sphere";
-      const color = nodeStyle.color || this.theme.node.color;
+      const color = colorKey(nodeStyle.color, this.theme.node.color || defaultTheme.node.color);
       const key = `${geometry}:${color}`;
       if (!groups.has(key)) groups.set(key, { geometry, color, nodes: [] });
       groups.get(key).nodes.push(node);
     }
 
     for (const { geometry, color, nodes } of groups.values()) {
-      const material = new THREE.MeshBasicMaterial({ color: new THREE.Color(color) });
+      const material = new THREE.MeshBasicMaterial({ color: resolveThreeColor(color, defaultTheme.node.color) });
       const mesh = new THREE.InstancedMesh(GEOMETRIES[geometry](), material, nodes.length);
       mesh.frustumCulled = false;
       mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -290,7 +315,7 @@ export class ThreeGraph {
       const source = this.nodeById.get(endpointId(edge.source));
       const target = this.nodeById.get(endpointId(edge.target));
       const edgeStyle = this.edgeStyle(edge);
-      const edgeColor = new THREE.Color(edgeStyle.color || this.theme.edge.color);
+      const edgeColor = resolveThreeColor(edgeStyle.color, this.theme.edge.color || defaultTheme.edge.color);
       const opacity = Math.max(0, Math.min(1, edgeStyle.opacity ?? this.theme.edge.opacity ?? 1));
       edgeColor.multiplyScalar(opacity);
       this.edgePositions[offset++] = source.x || 0;

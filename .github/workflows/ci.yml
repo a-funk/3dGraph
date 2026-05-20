@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build vanilla example
+        run: npm run build:example
+
+      - name: Build JSON example
+        run: npm run build:example:json
+
+      - name: Check package contents
+        run: npm pack --dry-run
+
+      - name: Run consumer smoke
+        run: npm run smoke:consumer
+
+      - name: Install browser for visual smoke
+        run: npx playwright install --with-deps chromium
+
+      - name: Run visual smoke
+        run: npm run smoke:visual

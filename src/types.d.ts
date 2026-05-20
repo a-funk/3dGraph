@@ -82,10 +82,27 @@ export type TraversalCandidate = {
   node: NormalizedNode | GraphNode;
 };
 
+export type TraversalDirection = "next" | "previous" | 1 | -1;
+
+export type TraversalStep = {
+  candidate: TraversalCandidate | null;
+  index: number;
+  count: number;
+  candidates: TraversalCandidate[];
+};
+
 export function graphStats(graph: GraphData | ReturnType<typeof createGraphModel>): GraphStats;
 export function describeGraph(graph: GraphData | ReturnType<typeof createGraphModel>, options?: { maxTypes?: number }): string;
 export function describeNode(nodeOrId: string | number | GraphNode | null | undefined, graph: GraphData | ReturnType<typeof createGraphModel>, options?: { maxNeighbors?: number }): string;
 export function traversalCandidates(nodeOrId: string | number | GraphNode | null | undefined, graph: GraphData | ReturnType<typeof createGraphModel>, options?: { limit?: number; includeHidden?: boolean }): TraversalCandidate[];
+export function traversalStep(nodeOrId: string | number | GraphNode | null | undefined, graph: GraphData | ReturnType<typeof createGraphModel>, options?: {
+  activeId?: string | number | null;
+  direction?: TraversalDirection;
+  wrap?: boolean;
+  limit?: number;
+  includeHidden?: boolean;
+  candidates?: TraversalCandidate[];
+}): TraversalStep;
 
 export const LAYOUT_VARIANTS: readonly ["default", "galaxies", "communities", "core"];
 export function createSeededRandom(seed?: string): () => number;

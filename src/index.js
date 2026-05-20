@@ -48,4 +48,5 @@ export {
   describeNode,
   graphStats,
   traversalCandidates,
+  traversalStep,
 } from "./a11y/index.js";

@@ -6,6 +6,7 @@ import {
   describeNode,
   graphStats,
   traversalCandidates,
+  traversalStep,
 } from "../src/index.js";
 
 const data = {
@@ -49,4 +50,30 @@ test("traversalCandidates returns ranked neighbor targets", () => {
 
   assert.deepEqual(candidates.map((candidate) => candidate.id), ["flight", "shoot"]);
   assert.deepEqual(candidates.map((candidate) => candidate.label), ["Flight Controls", "Shoot to Select"]);
+});
+
+test("traversalStep advances through neighbors with wrapping", () => {
+  const model = createGraphModel(data);
+
+  assert.equal(traversalStep("hub", model).candidate.id, "flight");
+  assert.equal(traversalStep("hub", model, { activeId: "flight" }).candidate.id, "shoot");
+  assert.equal(traversalStep("hub", model, { activeId: "flight", direction: "previous" }).candidate.id, "shoot");
+  assert.equal(traversalStep("hub", model, { activeId: "shoot", direction: -1 }).candidate.id, "flight");
+});
+
+test("traversalStep clamps at boundaries when wrapping is disabled", () => {
+  const model = createGraphModel(data);
+
+  assert.equal(traversalStep("hub", model, { activeId: "flight", direction: "previous", wrap: false }).candidate.id, "flight");
+  assert.equal(traversalStep("hub", model, { activeId: "shoot", direction: "next", wrap: false }).candidate.id, "shoot");
+});
+
+test("traversalStep accepts provided candidates and missing nodes", () => {
+  const model = createGraphModel(data);
+  const candidates = traversalCandidates("hub", model);
+
+  assert.equal(traversalStep("missing", model).candidate, null);
+  assert.equal(traversalStep("missing", model).index, -1);
+  assert.equal(traversalStep("hub", model, { activeId: candidates[0].id, candidates }).candidate.id, candidates[1].id);
+  assert.equal(traversalStep("hub", model, { activeId: 123, candidates }).candidate.id, candidates[0].id);
 });

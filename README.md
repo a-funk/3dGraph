@@ -253,7 +253,9 @@ const graph = create3dGraph({
 Canvas content should be paired with app-owned HTML. 3dGraph exports
 `graphStats()`, `describeGraph()`, `describeNode()`, and
 `traversalCandidates()` so consumers can expose selection and navigation state
-in accessible panels. See [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
+in accessible panels. `traversalStep()` adds pure cursor math for keyboard
+neighbor navigation without taking over DOM events. See
+[docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
 
 ### `createForceLayout3D(options)`
 
@@ -305,9 +307,12 @@ specific URLs.
 ```bash
 npm install
 npm test
+npm run smoke:consumer
+npm run smoke:visual
 npm run dev
 npm run build:example
 npm run build:example:json
 ```
 
 For common setup issues, see [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
+For release gates, see [docs/RELEASE.md](docs/RELEASE.md).

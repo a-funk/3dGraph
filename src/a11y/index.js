@@ -141,3 +141,40 @@ export function traversalCandidates(nodeOrId, graph, options = {}) {
 
   return limit ? candidates.slice(0, limit) : candidates;
 }
+
+export function traversalStep(nodeOrId, graph, options = {}) {
+  const candidates = Array.isArray(options.candidates)
+    ? options.candidates
+    : traversalCandidates(nodeOrId, graph, options);
+  const count = candidates.length;
+
+  if (!count) {
+    return {
+      candidate: null,
+      index: -1,
+      count: 0,
+      candidates: [],
+    };
+  }
+
+  const direction = options.direction ?? "next";
+  const delta = direction === "previous" || direction === -1 ? -1 : 1;
+  const activeId = options.activeId == null ? null : endpointId(options.activeId);
+  const currentIndex = activeId == null
+    ? -1
+    : candidates.findIndex((candidate) => endpointId(candidate.id) === activeId);
+  let index = currentIndex + delta;
+
+  if (options.wrap !== false) {
+    index = ((index % count) + count) % count;
+  } else {
+    index = Math.max(0, Math.min(count - 1, index));
+  }
+
+  return {
+    candidate: candidates[index] || null,
+    index,
+    count,
+    candidates,
+  };
+}

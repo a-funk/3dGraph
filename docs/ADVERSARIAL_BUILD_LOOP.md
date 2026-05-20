@@ -44,3 +44,9 @@ Use fixtures with:
 - WebGL nonblank pixel checks.
 - Pointer-lock enter/exit checks.
 - Dispose/recreate loop to catch leaked resources.
+
+Local command:
+
+```bash
+npm run smoke:visual
+```
