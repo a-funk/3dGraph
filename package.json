@@ -1,7 +1,7 @@
 {
   "name": "@a-funk/3d-graph",
-  "version": "0.1.0",
-  "description": "Three.js knowledge-graph exploration library with 3D layouts, flight controls, and shoot-to-select interactions.",
+  "version": "0.2.0",
+  "description": "Three.js knowledge-graph exploration library with 3D layouts, flight controls, shoot-to-select interactions, and real-data examples.",
   "type": "module",
   "main": "./src/index.js",
   "module": "./src/index.js",
@@ -39,6 +39,10 @@
       "types": "./src/types.d.ts",
       "import": "./src/generators/index.js"
     },
+    "./a11y": {
+      "types": "./src/types.d.ts",
+      "import": "./src/a11y/index.js"
+    },
     "./styles": {
       "types": "./src/types.d.ts",
       "import": "./src/styles/index.js"
@@ -54,7 +58,9 @@
   ],
   "scripts": {
     "build:example": "vite build examples/vanilla --outDir ../../build/vanilla-example --emptyOutDir",
+    "build:example:json": "vite build examples/json --outDir ../../build/json-example --emptyOutDir",
     "dev": "vite examples/vanilla --host 127.0.0.1",
+    "dev:json": "vite examples/json --host 127.0.0.1",
     "test": "node --test test/*.test.js"
   },
   "keywords": [

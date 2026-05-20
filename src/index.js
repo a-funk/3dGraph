@@ -42,3 +42,10 @@ export {
   resolveEdgeStyle,
   resolveNodeStyle,
 } from "./styles/index.js";
+
+export {
+  describeGraph,
+  describeNode,
+  graphStats,
+  traversalCandidates,
+} from "./a11y/index.js";

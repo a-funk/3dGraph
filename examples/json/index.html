@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3dGraph JSON Example</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main id="app">
+      <div id="graph"></div>
+      <nav class="toolbar" aria-label="Graph controls">
+        <div class="brand">3dGraph JSON</div>
+        <button id="shoot" type="button">Shoot</button>
+        <button id="hub" type="button">Hub</button>
+        <button id="focus" type="button">2-hop</button>
+        <button id="showAll" type="button">All</button>
+      </nav>
+      <aside class="panel" aria-live="polite">
+        <p id="summary">Loading graph.json</p>
+        <h1 id="panelTitle">No node selected</h1>
+        <p id="panelMeta"></p>
+        <div id="neighbors" class="neighbors"></div>
+      </aside>
+    </main>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

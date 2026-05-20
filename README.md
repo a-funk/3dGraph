@@ -5,17 +5,26 @@
 state, projectile shooting, orbit/look controls, animated node travel, and 6DoF
 flight mode.
 
-The public repo is pre-release, but the first path now renders a graph.
+The public repo is pre-release, but the first path renders a graph and the
+examples cover generated and real JSON data.
 
 ## Install
 
-Until the first npm release:
+Until the first npm release, pin an exact GitHub commit SHA for reproducible
+installs:
+
+```bash
+npm install github:a-funk/3dGraph#<commit-sha>
+```
+
+Installing the moving default branch also works for experiments, but your
+lockfile may keep an older commit until you update it explicitly:
 
 ```bash
 npm install github:a-funk/3dGraph
 ```
 
-After publish:
+After npm publication, use the package release:
 
 ```bash
 npm install @a-funk/3d-graph
@@ -67,6 +76,19 @@ npm run dev
 
 The demo renders generated graphs and lets you switch presets, layouts, node
 counts, flight mode, shoot/select, animated travel, and focus-neighborhood mode.
+
+## JSON Data Demo
+
+```bash
+npm run dev:json
+npm run build:example:json
+```
+
+This example fetches `examples/json/public/graph.json`, validates it with
+`validateGraphData`, renders it, and keeps working after `vite build`.
+
+See [examples/json/README.md](examples/json/README.md) for the external detail
+panel pattern.
 
 ## API Surface
 
@@ -201,6 +223,38 @@ const graph = create3dGraph({
 });
 ```
 
+### External detail panels
+
+3dGraph keeps product UI outside the renderer. Use `onSelect()` and the graph
+model to render ordinary HTML panels, labels, links, and traversal buttons:
+
+```js
+import { create3dGraph, describeNode, traversalCandidates } from "@a-funk/3d-graph";
+
+const graph = create3dGraph({
+  container,
+  data,
+  onSelect(node) {
+    panel.textContent = node ? describeNode(node, graph.model) : "No node selected";
+    neighborList.replaceChildren(
+      ...traversalCandidates(node, graph.model).map((candidate) => {
+        const button = document.createElement("button");
+        button.textContent = candidate.label;
+        button.addEventListener("click", () => graph.flyToNode(candidate.id));
+        return button;
+      })
+    );
+  }
+});
+```
+
+### Accessibility helpers
+
+Canvas content should be paired with app-owned HTML. 3dGraph exports
+`graphStats()`, `describeGraph()`, `describeNode()`, and
+`traversalCandidates()` so consumers can expose selection and navigation state
+in accessible panels. See [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
+
 ### `createForceLayout3D(options)`
 
 Creates a d3-force-3d simulation. You can use it directly, but `create3dGraph`
@@ -253,4 +307,7 @@ npm install
 npm test
 npm run dev
 npm run build:example
+npm run build:example:json
 ```
+
+For common setup issues, see [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).

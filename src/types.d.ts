@@ -63,6 +63,30 @@ export function createGraphModel(data: GraphData, options?: { allowDanglingEdges
   toJSON(): { nodes: NormalizedNode[]; edges: NormalizedEdge[] };
 };
 
+export type GraphStats = {
+  nodeCount: number;
+  edgeCount: number;
+  visibleNodeCount: number;
+  visibleEdgeCount: number;
+  hiddenNodeCount: number;
+  hiddenEdgeCount: number;
+  types: Record<string, number>;
+  edgeKinds: Record<string, number>;
+};
+
+export type TraversalCandidate = {
+  id: string;
+  label: string;
+  type: string;
+  degree: number;
+  node: NormalizedNode | GraphNode;
+};
+
+export function graphStats(graph: GraphData | ReturnType<typeof createGraphModel>): GraphStats;
+export function describeGraph(graph: GraphData | ReturnType<typeof createGraphModel>, options?: { maxTypes?: number }): string;
+export function describeNode(nodeOrId: string | number | GraphNode | null | undefined, graph: GraphData | ReturnType<typeof createGraphModel>, options?: { maxNeighbors?: number }): string;
+export function traversalCandidates(nodeOrId: string | number | GraphNode | null | undefined, graph: GraphData | ReturnType<typeof createGraphModel>, options?: { limit?: number; includeHidden?: boolean }): TraversalCandidate[];
+
 export const LAYOUT_VARIANTS: readonly ["default", "galaxies", "communities", "core"];
 export function createSeededRandom(seed?: string): () => number;
 export function hashUnit(value: unknown): number;

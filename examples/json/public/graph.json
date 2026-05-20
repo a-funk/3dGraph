@@ -1,0 +1,195 @@
+{
+  "nodes": [
+    {
+      "id": "note:index",
+      "label": "Knowledge Index",
+      "type": "note",
+      "groupId": "workspace",
+      "size": 1.6
+    },
+    {
+      "id": "note:3dgraph",
+      "label": "3D Graph OSS",
+      "type": "note",
+      "groupId": "workspace",
+      "size": 1.5
+    },
+    {
+      "id": "feature:flight",
+      "label": "Flight Controls",
+      "type": "feature",
+      "groupId": "interaction",
+      "geometry": "octahedron"
+    },
+    {
+      "id": "feature:shoot",
+      "label": "Shoot to Select",
+      "type": "feature",
+      "groupId": "interaction",
+      "geometry": "octahedron"
+    },
+    {
+      "id": "feature:orbit",
+      "label": "Orbit Selection",
+      "type": "feature",
+      "groupId": "interaction"
+    },
+    {
+      "id": "feature:zoom",
+      "label": "Zoom Behavior",
+      "type": "feature",
+      "groupId": "interaction"
+    },
+    {
+      "id": "adapter:json",
+      "label": "Static JSON Adapter",
+      "type": "adapter",
+      "groupId": "data"
+    },
+    {
+      "id": "adapter:markdown",
+      "label": "Markdown Links",
+      "type": "adapter",
+      "groupId": "data"
+    },
+    {
+      "id": "scorecard:dx",
+      "label": "DX Scorecard",
+      "type": "scorecard",
+      "groupId": "quality",
+      "geometry": "tetrahedron"
+    },
+    {
+      "id": "quality:a11y",
+      "label": "Accessibility Summary",
+      "type": "scorecard",
+      "groupId": "quality"
+    },
+    {
+      "id": "quality:troubleshooting",
+      "label": "Troubleshooting Guide",
+      "type": "scorecard",
+      "groupId": "quality"
+    },
+    {
+      "id": "release:sha",
+      "label": "Exact SHA Install",
+      "type": "adapter",
+      "groupId": "release"
+    }
+  ],
+  "edges": [
+    {
+      "source": "note:index",
+      "target": "note:3dgraph",
+      "kind": "wikilink",
+      "weight": 3,
+      "color": "#ffbc70",
+      "opacity": 0.86
+    },
+    {
+      "source": "note:3dgraph",
+      "target": "feature:flight",
+      "kind": "feature",
+      "weight": 2,
+      "color": "#78e3c5",
+      "opacity": 0.82
+    },
+    {
+      "source": "note:3dgraph",
+      "target": "feature:shoot",
+      "kind": "feature",
+      "weight": 2,
+      "color": "#78e3c5",
+      "opacity": 0.82
+    },
+    {
+      "source": "note:3dgraph",
+      "target": "feature:orbit",
+      "kind": "feature",
+      "weight": 1.6,
+      "color": "#78e3c5",
+      "opacity": 0.72
+    },
+    {
+      "source": "note:3dgraph",
+      "target": "feature:zoom",
+      "kind": "feature",
+      "weight": 1.6,
+      "color": "#78e3c5",
+      "opacity": 0.72
+    },
+    {
+      "source": "note:index",
+      "target": "adapter:json",
+      "kind": "data",
+      "weight": 1.2,
+      "color": "#8ab4ff",
+      "opacity": 0.68
+    },
+    {
+      "source": "note:index",
+      "target": "adapter:markdown",
+      "kind": "data",
+      "weight": 1.1,
+      "color": "#8ab4ff",
+      "opacity": 0.64
+    },
+    {
+      "source": "scorecard:dx",
+      "target": "adapter:json",
+      "kind": "requires",
+      "weight": 1,
+      "color": "#f38ad5",
+      "opacity": 0.72
+    },
+    {
+      "source": "scorecard:dx",
+      "target": "quality:troubleshooting",
+      "kind": "requires",
+      "weight": 1,
+      "color": "#f38ad5",
+      "opacity": 0.72
+    },
+    {
+      "source": "scorecard:dx",
+      "target": "quality:a11y",
+      "kind": "requires",
+      "weight": 1,
+      "color": "#f38ad5",
+      "opacity": 0.72
+    },
+    {
+      "source": "scorecard:dx",
+      "target": "release:sha",
+      "kind": "requires",
+      "weight": 1,
+      "color": "#f38ad5",
+      "opacity": 0.72
+    },
+    {
+      "source": "feature:shoot",
+      "target": "feature:flight",
+      "kind": "interaction",
+      "weight": 1.4,
+      "color": "#d5dde8",
+      "opacity": 0.54
+    },
+    {
+      "source": "feature:orbit",
+      "target": "feature:zoom",
+      "kind": "interaction",
+      "weight": 1.3,
+      "color": "#d5dde8",
+      "opacity": 0.48
+    },
+    {
+      "source": "quality:a11y",
+      "target": "adapter:json",
+      "kind": "supports",
+      "weight": 1,
+      "color": "#8ab4ff",
+      "opacity": 0.58
+    }
+  ]
+}
