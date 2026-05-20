@@ -27,6 +27,16 @@ export {
 } from "./controls/index.js";
 
 export {
+  ThreeGraph,
+  create3dGraph,
+} from "./renderers/index.js";
+
+export {
+  GENERATION_PRESETS,
+  generateGraphData,
+} from "./generators/index.js";
+
+export {
   defaultTheme,
   geometryForNode,
   resolveEdgeStyle,

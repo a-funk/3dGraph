@@ -4,6 +4,7 @@ export type GraphNode = {
   type?: string;
   subtype?: string;
   groupId?: string;
+  parentId?: string;
   color?: string;
   geometry?: "sphere" | "cube" | "octahedron" | "tetrahedron" | string;
   size?: number;
@@ -69,7 +70,7 @@ export function degreeMap(nodes: NormalizedNode[], edges: NormalizedEdge[]): Map
 export function runLabelPropagation(nodes: NormalizedNode[], edges: NormalizedEdge[], options?: { maxIters?: number; seed?: string; random?: () => number }): Map<string, string>;
 export function computeKCore(nodes: NormalizedNode[], edges: NormalizedEdge[]): Map<string, number>;
 export function createForceLayout3D(options: {
-  d3: unknown;
+  d3?: unknown;
   nodes: NormalizedNode[];
   edges: NormalizedEdge[];
   layout?: "default" | "galaxies" | "communities" | "core";
@@ -78,6 +79,18 @@ export function createForceLayout3D(options: {
   random?: () => number;
   chargeStrength?: (node: NormalizedNode) => number;
 }): unknown;
+
+export type GenerationPreset = "knowledge" | "clusters" | "constellation" | "tree" | "mesh";
+export const GENERATION_PRESETS: readonly GenerationPreset[];
+export function generateGraphData(options?: {
+  preset?: GenerationPreset;
+  nodeCount?: number;
+  nodes?: number;
+  clusters?: number;
+  edgeDensity?: number;
+  seed?: string;
+  random?: () => number;
+}): GraphData;
 
 export type FlightKeyIntent = "forward" | "backward" | "left" | "right" | "up" | "down" | "rollLeft" | "rollRight" | "sprint" | "exit";
 export type FlightKeymap = Record<FlightKeyIntent, string[]>;
@@ -121,6 +134,66 @@ export function sampleTour(tour: ReturnType<typeof createTour>, progress: number
   lookAt: [number, number, number];
   progress: number;
 };
+
+export type GraphTheme = Record<string, unknown>;
+
+export type Create3dGraphOptions = {
+  container: HTMLElement;
+  data?: GraphData;
+  generate?: Parameters<typeof generateGraphData>[0];
+  layout?: "default" | "galaxies" | "communities" | "core";
+  layoutOptions?: Record<string, unknown>;
+  seed?: string;
+  theme?: GraphTheme;
+  style?: {
+    node?: (node: NormalizedNode, base: Record<string, unknown>) => Record<string, unknown>;
+    edge?: (edge: NormalizedEdge, base: Record<string, unknown>) => Record<string, unknown>;
+  };
+  camera?: {
+    fov?: number;
+    radius?: number;
+    minRadius?: number;
+    maxRadius?: number;
+    theta?: number;
+    phi?: number;
+    far?: number;
+    position?: [number, number, number];
+  };
+  flight?: false | {
+    pointerLock?: boolean;
+    speed?: number;
+    sprintMultiplier?: number;
+  };
+  antialias?: boolean;
+  alpha?: boolean;
+  nodeScale?: number;
+  maxPixelRatio?: number;
+  powerPreference?: WebGLPowerPreference;
+  onSelect?: (node: NormalizedNode) => void;
+  onHover?: (node: NormalizedNode | null) => void;
+  onModeChange?: (mode: "orbit" | "flight") => void;
+};
+
+export class ThreeGraph {
+  constructor(options: Create3dGraphOptions);
+  readonly container: HTMLElement;
+  readonly camera: unknown;
+  readonly renderer: unknown;
+  readonly scene: unknown;
+  model: ReturnType<typeof createGraphModel>;
+  readonly flight: FlightControls;
+  cameraMode: "orbit" | "flight";
+  focusNode(id: string | number | NormalizedNode, options?: { radius?: number }): NormalizedNode | null;
+  selectNode(id: string | number): NormalizedNode | null;
+  clearSelection(): void;
+  setData(data: GraphData, options?: { layout?: "default" | "galaxies" | "communities" | "core"; layoutOptions?: Record<string, unknown> }): this;
+  generate(options?: Parameters<typeof generateGraphData>[0] & { layout?: "default" | "galaxies" | "communities" | "core" }): this;
+  setLayout(layout: "default" | "galaxies" | "communities" | "core", options?: Record<string, unknown>): this;
+  resize(): this;
+  destroy(): void;
+}
+
+export function create3dGraph(options: Create3dGraphOptions): ThreeGraph;
 
 export const defaultTheme: Record<string, unknown>;
 export function geometryForNode(node: GraphNode, theme?: Record<string, unknown>): string;

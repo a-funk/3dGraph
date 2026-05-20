@@ -32,6 +32,14 @@
       "types": "./src/types.d.ts",
       "import": "./src/controls/index.js"
     },
+    "./renderers": {
+      "types": "./src/types.d.ts",
+      "import": "./src/renderers/index.js"
+    },
+    "./generators": {
+      "types": "./src/types.d.ts",
+      "import": "./src/generators/index.js"
+    },
     "./styles": {
       "types": "./src/types.d.ts",
       "import": "./src/styles/index.js"
@@ -46,6 +54,8 @@
     "LICENSE"
   ],
   "scripts": {
+    "build:example": "vite build examples/vanilla --outDir ../../build/vanilla-example --emptyOutDir",
+    "dev": "vite examples/vanilla --host 127.0.0.1",
     "test": "node --test test/*.test.js"
   },
   "keywords": [
@@ -59,17 +69,12 @@
     "graph-visualization"
   ],
   "license": "MIT",
-  "peerDependencies": {
-    "d3-force-3d": ">=3.0.0",
-    "three": ">=0.160.0"
+  "dependencies": {
+    "d3-force-3d": "^3.0.6",
+    "three": "^0.184.0"
   },
-  "peerDependenciesMeta": {
-    "d3-force-3d": {
-      "optional": true
-    },
-    "three": {
-      "optional": true
-    }
-  },
-  "sideEffects": false
+  "sideEffects": false,
+  "devDependencies": {
+    "vite": "^7.3.3"
+  }
 }

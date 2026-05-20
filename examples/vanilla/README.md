@@ -1,12 +1,11 @@
-# Vanilla Example
+# 3dGraph Vanilla Example
 
-This placeholder example documents the target v0.1 smoke path. It will become
-a runnable WebGL demo when the Three renderer moves into the package.
+Run from the repo root:
 
-Acceptance criteria:
+```bash
+npm install
+npm run dev
+```
 
-- Render a static fixture without any product API.
-- Enter and exit flight controls.
-- Select a node via screen-space picking.
-- Focus a node and play a short tour.
-- Recreate and destroy the viewer without leaking event listeners.
+Then open the local Vite URL. The example imports directly from `src/`, renders
+a generated graph, and exposes layout/generation/flight configuration.

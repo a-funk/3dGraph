@@ -1,4 +1,16 @@
 import {
+  forceCenter,
+  forceCollide,
+  forceLink,
+  forceManyBody,
+  forceRadial,
+  forceSimulation,
+  forceX,
+  forceY,
+  forceZ,
+} from "d3-force-3d";
+
+import {
   computeKCore,
   createSeededRandom,
   degreeMap,
@@ -14,6 +26,18 @@ export const LAYOUT_VARIANTS = [
   "communities",
   "core",
 ];
+
+const defaultD3 = {
+  forceCenter,
+  forceCollide,
+  forceLink,
+  forceManyBody,
+  forceRadial,
+  forceSimulation,
+  forceX,
+  forceY,
+  forceZ,
+};
 
 function requireD3(d3) {
   const required = ["forceSimulation", "forceLink", "forceManyBody", "forceCenter", "forceCollide"];
@@ -224,7 +248,7 @@ function buildCore(d3, nodes, edges, options) {
   return attachRandomSource(sim, random);
 }
 
-export function createForceLayout3D({ d3, nodes, edges, layout = "default", seed = "3dgraph", ...options }) {
+export function createForceLayout3D({ d3 = defaultD3, nodes, edges, layout = "default", seed = "3dgraph", ...options }) {
   requireD3(d3);
   const random = options.random || createSeededRandom(seed);
   const args = [d3, nodes, edges, { ...options, random }];

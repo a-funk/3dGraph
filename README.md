@@ -1,42 +1,159 @@
 # 3dGraph
 
-3dGraph is the extraction workspace for a reusable Three.js knowledge-graph
-exploration library: dense graph layouts, instanced rendering, orbit/flight
-navigation, screen-space selection, labels, focus, and cinematic tours.
+3dGraph is a Three.js knowledge-graph exploration library with force-directed
+3D layouts, instanced node rendering, screen-space selection, orbit controls,
+and 6DoF flight mode.
 
-This package is intentionally pre-release. The code here defines the library
-boundary and extracts the first reusable seams without changing Toto's current
-graph app.
+The public repo is pre-release, but the first path now renders a graph.
 
-## What Is In This Slice
+## Install
 
-- Generic graph data contract and validation.
-- Graph model helpers for degree, neighbors, and visible subsets.
-- Seeded graph analysis utilities: Fibonacci sphere points, label propagation,
-  k-core decomposition, degree maps.
-- d3-force-3d preset builders with explicit dependency injection.
-- Standalone 6DoF flight controls that do not know about graph data.
-- Generic tour sampling and default style hooks.
-- Tests that keep the source free of Toto APIs, Obsidian links, default
-  storage, and frame messaging.
+Until the first npm release:
 
-## Boundary
+```bash
+npm install github:a-funk/3dGraph
+```
 
-3dGraph owns graph rendering, layout, picking, focus, controls, labels, tours,
-and style hooks.
+After publish:
 
-Consumers own data fetching, auth, persistence, detail panels, product links,
-filters UI, and adapters from their domain objects into graph nodes and edges.
+```bash
+npm install @a-funk/3d-graph
+```
 
-The package must not require a Toto account, a proxy server, browser storage,
-product-specific URLs, or global `window.THREE` / `window.d3` objects.
+`three` and `d3-force-3d` are regular dependencies, so the quickstart does not
+make you install or inject a separate 3D stack.
+
+## Quickstart
+
+```js
+import { create3dGraph, generateGraphData } from "@a-funk/3d-graph";
+
+const graph = create3dGraph({
+  container: document.getElementById("graph"),
+  data: generateGraphData({
+    preset: "knowledge",
+    nodeCount: 240,
+    clusters: 8,
+    edgeDensity: 0.08,
+    seed: "readme"
+  }),
+  layout: "communities",
+  flight: {
+    pointerLock: true,
+    speed: 1.2
+  },
+  onSelect(node) {
+    console.log(node);
+  }
+});
+
+graph.focusNode("cluster-0");
+```
+
+Add a container:
+
+```html
+<div id="graph" style="width: 100vw; height: 100vh"></div>
+```
+
+## Vanilla Demo
+
+```bash
+npm install
+npm run dev
+```
+
+The demo renders generated graphs and lets you switch presets, layouts, node
+counts, and flight mode.
+
+## API Surface
+
+### `create3dGraph(options)`
+
+Mounts a Three.js scene and returns a controller.
+
+Useful options:
+
+| Option | Purpose |
+| --- | --- |
+| `container` | Required DOM element for the WebGL canvas. |
+| `data` | Plain `{ nodes, edges }` graph data. |
+| `generate` | Fixture-generation options used when `data` is omitted. |
+| `layout` | `"default"`, `"galaxies"`, `"communities"`, or `"core"`. |
+| `theme` | Background, node, edge, and accent defaults. |
+| `style.node` | Per-node style callback for color, size, and geometry. |
+| `style.edge` | Per-edge style callback. |
+| `flight` | `false` to disable, or `{ pointerLock, speed }`. |
+| `nodeScale` | Multiplies graph node sizes for the renderer. |
+| `onSelect` | Node selection callback. |
+| `onHover` | Node hover callback. |
+
+Controller methods:
+
+```js
+graph.setData(data);
+graph.generate({ preset: "mesh", nodeCount: 500 });
+graph.setLayout("galaxies");
+graph.focusNode("node-42");
+graph.selectNode("node-42");
+graph.clearSelection();
+graph.resize();
+graph.destroy();
+```
+
+Flight controls are exposed on `graph.flight`:
+
+```js
+graph.flight.enter();
+graph.flight.exit();
+graph.flight.setSpeed(2);
+```
+
+Default keys: `WASD` move, `Space/C` up/down, `Q/E` roll, `Shift` sprint,
+`Escape` exit.
+
+### `generateGraphData(options)`
+
+Creates useful demo data without any product adapter.
+
+```js
+generateGraphData({
+  preset: "constellation",
+  nodeCount: 300,
+  clusters: 12,
+  edgeDensity: 0.1,
+  seed: "stable"
+});
+```
+
+Presets:
+
+- `knowledge`
+- `clusters`
+- `constellation`
+- `tree`
+- `mesh`
+
+### `createForceLayout3D(options)`
+
+Creates a d3-force-3d simulation. You can use it directly, but `create3dGraph`
+uses it for you.
+
+```js
+const sim = createForceLayout3D({
+  nodes,
+  edges,
+  layout: "core",
+  seed: "stable"
+});
+```
 
 ## Data Contract
 
 ```js
 const data = {
   nodes: [
-    { id: "paper:attention", label: "Attention Is All You Need", type: "paper" },
+    { id: "paper:attention", label: "Attention Is All You Need", type: "document" },
     { id: "concept:transformers", label: "Transformers", type: "concept" }
   ],
   edges: [
@@ -45,56 +162,26 @@ const data = {
 };
 ```
 
-Known node fields are `id`, `label`, `type`, `subtype`, `groupId`, `color`,
-`size`, `x`, `y`, `z`, `hidden`, `arrivalTime`, and `data`. Known edge fields
-are `source`, `target`, `kind`, `weight`, `hidden`, and `data`.
+Known node fields are `id`, `label`, `type`, `subtype`, `groupId`, `parentId`,
+`color`, `geometry`, `size`, `x`, `y`, `z`, `hidden`, `arrivalTime`, and `data`.
+Known edge fields are `source`, `target`, `kind`, `weight`, `hidden`, `color`,
+and `data`.
 
-## Current API
+## Boundary
 
-```js
-import {
-  createGraphModel,
-  createForceLayout3D,
-  createFlightControls,
-  defaultTheme,
-} from "@a-funk/3d-graph";
+3dGraph owns rendering, layout, picking, focus, controls, graph generation,
+and style hooks.
 
-const model = createGraphModel(data);
-
-const sim = createForceLayout3D({
-  d3,
-  nodes: model.nodes,
-  edges: model.edges,
-  layout: "communities",
-  seed: "demo"
-});
-
-const controls = createFlightControls({
-  THREE,
-  camera,
-  domElement: renderer.domElement,
-  pointerLock: true
-});
-```
-
-`createForceLayout3D` accepts an injected d3-force-3d compatible object. The
-renderer extraction will make this direct for normal bundler users once the
-package has its own build pipeline.
-
-## v0.1 Target
-
-- Three renderer with instanced node pools and dynamic edge buffers.
-- Flight/orbit camera system extracted from the existing graph app.
-- Screen-space picking, focus navigation, labels, and tours.
-- Vanilla example with anonymized fixtures.
-- Playwright WebGL smoke tests.
-- Cold-clone install test before publish.
+Consumers own data fetching, auth, persistence, detail panels, product links,
+and adapters from their domain objects into graph nodes and edges. The library
+does not require a server, a token, browser storage, frame messaging, or product
+specific URLs.
 
 ## Development
 
 ```bash
-cd packages/3dgraph
+npm install
 npm test
+npm run dev
+npm run build:example
 ```
-
-The package is marked `private` until the release checklist is complete.

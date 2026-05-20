@@ -54,3 +54,14 @@ test("force layout builder fails clearly without d3-force-3d", () => {
     /d3-force-3d compatible object/,
   );
 });
+
+test("force layout builder works without injecting d3", () => {
+  const nodes = [{ id: "a" }, { id: "b" }];
+  const edges = [{ source: "a", target: "b" }];
+  const sim = createForceLayout3D({ nodes, edges, seed: "default-d3" });
+  sim.tick(3);
+  sim.stop();
+
+  assert.equal(typeof nodes[0].x, "number");
+  assert.equal(typeof nodes[0].z, "number");
+});

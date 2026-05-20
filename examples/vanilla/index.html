@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3dGraph Vanilla Example</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main id="app">
+      <div id="graph"></div>
+      <section class="toolbar" aria-label="Graph controls">
+        <div class="brand">3dGraph</div>
+        <label>
+          <span>Preset</span>
+          <select id="preset">
+            <option value="knowledge">Knowledge</option>
+            <option value="clusters">Clusters</option>
+            <option value="constellation">Constellation</option>
+            <option value="tree">Tree</option>
+            <option value="mesh">Mesh</option>
+          </select>
+        </label>
+        <label>
+          <span>Layout</span>
+          <select id="layout">
+            <option value="default">Default</option>
+            <option value="galaxies">Galaxies</option>
+            <option value="communities">Communities</option>
+            <option value="core">Core</option>
+          </select>
+        </label>
+        <label>
+          <span>Nodes</span>
+          <input id="nodes" type="range" min="40" max="700" step="20" value="220" />
+        </label>
+        <button id="regenerate" type="button">Regenerate</button>
+        <button id="flight" type="button">Flight</button>
+      </section>
+      <aside id="detail" aria-live="polite">Select a node</aside>
+    </main>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
