@@ -9,7 +9,7 @@ test("normalizes graph data into documented fields", () => {
       { id: 2 },
     ],
     edges: [
-      { source: "a", target: 2, weight: 2 },
+      { source: "a", target: 2, weight: 2, color: "#ff00aa", opacity: 0.42 },
     ],
   });
 
@@ -18,6 +18,8 @@ test("normalizes graph data into documented fields", () => {
   assert.equal(graph.nodes[1].id, "2");
   assert.equal(graph.edges[0].source, "a");
   assert.equal(graph.edges[0].target, "2");
+  assert.equal(graph.edges[0].color, "#ff00aa");
+  assert.equal(graph.edges[0].opacity, 0.42);
   assert.equal(graph.nodes[0].data, undefined);
 });
 

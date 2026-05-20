@@ -24,6 +24,7 @@ export type GraphEdge = {
   weight?: number;
   hidden?: boolean;
   color?: string;
+  opacity?: number;
   data?: unknown;
 };
 
@@ -135,7 +136,102 @@ export function sampleTour(tour: ReturnType<typeof createTour>, progress: number
   progress: number;
 };
 
-export type GraphTheme = Record<string, unknown>;
+export type NodeGeometry = "sphere" | "cube" | "octahedron" | "tetrahedron" | string;
+
+export type NodeStyle = {
+  color?: string;
+  geometry?: NodeGeometry;
+  size?: number;
+  opacity?: number;
+};
+
+export type EdgeStyle = {
+  color?: string;
+  opacity?: number;
+  weight?: number;
+};
+
+export type GraphTheme = {
+  background?: string;
+  foreground?: string;
+  accent?: string;
+  node?: {
+    color?: string;
+    colorByType?: Record<string, string>;
+    geometryByType?: Record<string, NodeGeometry>;
+    defaultGeometry?: NodeGeometry;
+    size?: number;
+  };
+  edge?: {
+    color?: string;
+    opacity?: number;
+  };
+} & Record<string, unknown>;
+
+export type PickNodeOptions = {
+  tolerancePx?: number;
+};
+
+export type ShootResult = {
+  hit: boolean;
+  node: NormalizedNode | null;
+  target: unknown;
+};
+
+export type ShootOptions = PickNodeOptions & {
+  x?: number;
+  y?: number;
+  clientX?: number;
+  clientY?: number;
+  startX?: number;
+  startY?: number;
+  startZ?: number;
+  durationMs?: number;
+  missDistance?: number;
+  select?: boolean;
+  focus?: boolean;
+  flyTo?: boolean;
+};
+
+export type FlyToNodeOptions = {
+  radius?: number;
+  theta?: number;
+  phi?: number;
+  depth?: number | null;
+  durationMs?: number;
+  duration?: number;
+  easing?: (t: number) => number;
+  notify?: boolean;
+  onComplete?: (node: NormalizedNode) => void;
+};
+
+export type FocusOptions = {
+  depth?: number;
+  select?: boolean;
+  notify?: boolean;
+  flyTo?: boolean;
+  focusCamera?: boolean;
+  radius?: number;
+  durationMs?: number;
+  duration?: number;
+  easing?: (t: number) => number;
+};
+
+export type ThreeGraphState = {
+  cameraMode: "orbit" | "flight";
+  selectedId: string | null;
+  selectedNode: NormalizedNode | null;
+  focusId: string | null;
+  focusDepth: number | null;
+  hoverId: string | null;
+  orbit: {
+    target: unknown;
+    radius: number;
+    theta: number;
+    phi: number;
+  };
+  flight: Record<string, unknown> | null;
+};
 
 export type Create3dGraphOptions = {
   container: HTMLElement;
@@ -146,8 +242,8 @@ export type Create3dGraphOptions = {
   seed?: string;
   theme?: GraphTheme;
   style?: {
-    node?: (node: NormalizedNode, base: Record<string, unknown>) => Record<string, unknown>;
-    edge?: (edge: NormalizedEdge, base: Record<string, unknown>) => Record<string, unknown>;
+    node?: (node: NormalizedNode, base: NodeStyle) => NodeStyle;
+    edge?: (edge: NormalizedEdge, base: EdgeStyle) => EdgeStyle;
   };
   camera?: {
     fov?: number;
@@ -164,13 +260,20 @@ export type Create3dGraphOptions = {
     speed?: number;
     sprintMultiplier?: number;
   };
+  projectile?: {
+    color?: string;
+    opacity?: number;
+  };
   antialias?: boolean;
   alpha?: boolean;
   nodeScale?: number;
   maxPixelRatio?: number;
   powerPreference?: WebGLPowerPreference;
-  onSelect?: (node: NormalizedNode) => void;
+  onSelect?: (node: NormalizedNode | null) => void;
   onHover?: (node: NormalizedNode | null) => void;
+  onShoot?: (result: ShootResult) => void;
+  onProjectileHit?: (node: NormalizedNode) => void;
+  onProjectileMiss?: (result: { point: unknown }) => void;
   onModeChange?: (mode: "orbit" | "flight") => void;
 };
 
@@ -183,9 +286,18 @@ export class ThreeGraph {
   model: ReturnType<typeof createGraphModel>;
   readonly flight: FlightControls;
   cameraMode: "orbit" | "flight";
-  focusNode(id: string | number | NormalizedNode, options?: { radius?: number }): NormalizedNode | null;
-  selectNode(id: string | number): NormalizedNode | null;
-  clearSelection(): void;
+  pickNode(clientX: number, clientY: number, options?: PickNodeOptions): NormalizedNode | null;
+  pickNode(point: { x?: number; y?: number; clientX?: number; clientY?: number }, options?: PickNodeOptions): NormalizedNode | null;
+  pickNodeAtCenter(options?: PickNodeOptions): NormalizedNode | null;
+  shoot(options?: ShootOptions): ShootResult;
+  getState(): ThreeGraphState;
+  getSelectedNode(): NormalizedNode | null;
+  focusNode(id: string | number | NormalizedNode, options?: { radius?: number; notify?: boolean; depth?: number | null }): NormalizedNode | null;
+  flyToNode(id: string | number | NormalizedNode, options?: FlyToNodeOptions): NormalizedNode | null;
+  setFocus(id: string | number | NormalizedNode | null, options?: FocusOptions): NormalizedNode | this | null;
+  clearFocus(): this;
+  selectNode(id: string | number | NormalizedNode, options?: { notify?: boolean }): NormalizedNode | null;
+  clearSelection(options?: { notify?: boolean }): void;
   setData(data: GraphData, options?: { layout?: "default" | "galaxies" | "communities" | "core"; layoutOptions?: Record<string, unknown> }): this;
   generate(options?: Parameters<typeof generateGraphData>[0] & { layout?: "default" | "galaxies" | "communities" | "core" }): this;
   setLayout(layout: "default" | "galaxies" | "communities" | "core", options?: Record<string, unknown>): this;

@@ -60,6 +60,7 @@ function normalizeEdge(edge, index) {
     target,
     kind: edge.kind == null ? "edge" : String(edge.kind),
     color: edge.color == null ? undefined : String(edge.color),
+    opacity: normalizeNumber(edge.opacity, undefined),
     weight: Math.max(0, normalizeNumber(edge.weight, 1)),
     hidden: Boolean(edge.hidden),
     data: edge.data,

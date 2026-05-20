@@ -1,8 +1,9 @@
 # 3dGraph
 
 3dGraph is a Three.js knowledge-graph exploration library with force-directed
-3D layouts, instanced node rendering, screen-space selection, orbit controls,
-and 6DoF flight mode.
+3D layouts, instanced node rendering, screen-space selection, selected/focus
+state, projectile shooting, orbit/look controls, animated node travel, and 6DoF
+flight mode.
 
 The public repo is pre-release, but the first path now renders a graph.
 
@@ -48,6 +49,7 @@ const graph = create3dGraph({
 });
 
 graph.focusNode("cluster-0");
+graph.shoot({ flyTo: true }); // fires from the reticle at the centered node
 ```
 
 Add a container:
@@ -64,7 +66,7 @@ npm run dev
 ```
 
 The demo renders generated graphs and lets you switch presets, layouts, node
-counts, and flight mode.
+counts, flight mode, shoot/select, animated travel, and focus-neighborhood mode.
 
 ## API Surface
 
@@ -82,11 +84,15 @@ Useful options:
 | `layout` | `"default"`, `"galaxies"`, `"communities"`, or `"core"`. |
 | `theme` | Background, node, edge, and accent defaults. |
 | `style.node` | Per-node style callback for color, size, and geometry. |
-| `style.edge` | Per-edge style callback. |
+| `style.edge` | Per-edge style callback for color, opacity, and semantic weight. |
 | `flight` | `false` to disable, or `{ pointerLock, speed }`. |
+| `projectile` | Projectile color and opacity defaults. |
 | `nodeScale` | Multiplies graph node sizes for the renderer. |
 | `onSelect` | Node selection callback. |
 | `onHover` | Node hover callback. |
+| `onShoot` | Called when `shoot()` fires. |
+| `onProjectileHit` | Called when a projectile reaches a node. |
+| `onProjectileMiss` | Called when a projectile misses the graph. |
 
 Controller methods:
 
@@ -95,11 +101,42 @@ graph.setData(data);
 graph.generate({ preset: "mesh", nodeCount: 500 });
 graph.setLayout("galaxies");
 graph.focusNode("node-42");
+graph.flyToNode("node-42", { durationMs: 900 });
+graph.setFocus("node-42", { depth: 2, flyTo: true });
+graph.clearFocus();
 graph.selectNode("node-42");
 graph.clearSelection();
+graph.pickNodeAtCenter();
+graph.shoot({ flyTo: true });
+graph.getState();
 graph.resize();
 graph.destroy();
 ```
+
+### Interaction Model
+
+The renderer has the same split that made the original Toto graph feel good:
+
+- **Selection** is detail-panel state. `selectNode(id)`, `clearSelection()`,
+  `getSelectedNode()`, and `onSelect(node | null)` own it.
+- **Focus** is graph-neighborhood state. `setFocus(id, { depth })` shows only
+  nodes within the requested hop depth; `clearFocus()` restores the full graph.
+- **Animated travel** is camera state. `flyToNode(id, { durationMs, easing })`
+  moves the camera to a node without making consumers touch internals.
+- **Picking** is public. `pickNode(x, y)`, `pickNode({ clientX, clientY })`,
+  and `pickNodeAtCenter()` use screen-space hit testing with forgiving targets.
+- **Shooting** is public. `shoot()` fires a small projectile from the lower
+  screen reticle toward the centered node. Hits can select/focus/fly; misses
+  invoke `onProjectileMiss`.
+
+Orbit controls are production-derived:
+
+- Drag with a selected node orbits around that node.
+- Drag with no selected node looks around in place.
+- `Shift + drag` also looks around.
+- Wheel zooms when nothing is selected.
+- Wheel pitches around the selected node when a node is selected.
+- Horizontal wheel yaw-orbits.
 
 Flight controls are exposed on `graph.flight`:
 
@@ -111,6 +148,9 @@ graph.flight.setSpeed(2);
 
 Default keys: `WASD` move, `Space/C` up/down, `Q/E` roll, `Shift` sprint,
 `Escape` exit.
+
+In flight mode, left-click calls `shoot({ select: true, flyTo: true })`. That is
+the stable public version of the original Toto graph's shoot-to-select behavior.
 
 ### `generateGraphData(options)`
 
@@ -133,6 +173,33 @@ Presets:
 - `constellation`
 - `tree`
 - `mesh`
+
+### Custom data
+
+Consumer apps adapt their own domain objects into the plain graph contract, then
+validate before rendering:
+
+```js
+import { create3dGraph, validateGraphData } from "@a-funk/3d-graph";
+
+const data = await fetch("/graph.json").then((res) => res.json());
+const validation = validateGraphData(data);
+
+if (!validation.valid) {
+  throw new Error(validation.errors.join("\\n"));
+}
+
+const graph = create3dGraph({
+  container: document.getElementById("graph"),
+  data,
+  style: {
+    edge(edge, base) {
+      if (edge.kind === "wikilink") return { ...base, color: "#c89aff", opacity: 0.75 };
+      return base;
+    }
+  }
+});
+```
 
 ### `createForceLayout3D(options)`
 
@@ -165,7 +232,9 @@ const data = {
 Known node fields are `id`, `label`, `type`, `subtype`, `groupId`, `parentId`,
 `color`, `geometry`, `size`, `x`, `y`, `z`, `hidden`, `arrivalTime`, and `data`.
 Known edge fields are `source`, `target`, `kind`, `weight`, `hidden`, `color`,
-and `data`.
+`opacity`, and `data`. Edge `color` and `opacity` are rendered per edge;
+`weight` is preserved for layout/style callbacks because portable WebGL line
+width support is inconsistent across browsers.
 
 ## Boundary
 

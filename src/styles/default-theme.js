@@ -45,7 +45,7 @@ export function resolveNodeStyle(node, theme = defaultTheme) {
 export function resolveEdgeStyle(edge, theme = defaultTheme) {
   return {
     color: edge.color || theme.edge.color,
-    opacity: edge.hidden ? 0 : theme.edge.opacity,
+    opacity: edge.hidden ? 0 : (edge.opacity ?? theme.edge.opacity),
     weight: edge.weight || 1,
   };
 }

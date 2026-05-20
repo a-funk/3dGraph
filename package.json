@@ -1,8 +1,7 @@
 {
   "name": "@a-funk/3d-graph",
-  "version": "0.0.0",
-  "private": true,
-  "description": "Pre-release extraction workspace for 3dGraph, a Three.js knowledge-graph exploration library.",
+  "version": "0.1.0",
+  "description": "Three.js knowledge-graph exploration library with 3D layouts, flight controls, and shoot-to-select interactions.",
   "type": "module",
   "main": "./src/index.js",
   "module": "./src/index.js",
