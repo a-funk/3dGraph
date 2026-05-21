@@ -13,12 +13,7 @@ Run the full gate from a clean worktree before tagging or announcing:
 
 ```bash
 npm ci
-npm test
-npm run build:example
-npm run build:example:json
-npm pack --dry-run
-npm run smoke:consumer
-npm run smoke:visual
+npm run release:gate
 ```
 
 The visual smoke writes desktop and mobile screenshots to the temp directory it
@@ -44,6 +39,26 @@ Update `package.json`, `package-lock.json`, and `CHANGELOG.md` together.
   coupling appears in `src/`.
 - README install instructions match the release channel: exact SHA for
   pre-release, package install after npm publication.
+
+## First npm Publish
+
+Authenticate as an npm user that can publish the `@a-funk` scope:
+
+```bash
+npm login
+npm whoami
+```
+
+Then publish the scoped package publicly:
+
+```bash
+npm publish --access public
+npm view @a-funk/3d-graph version dist-tags --json
+```
+
+After the registry confirms the version, update README install guidance to make
+`npm install @a-funk/3d-graph` the primary path and keep GitHub SHA pinning as a
+pre-release/debug fallback.
 
 ## What Not To Ship
 
