@@ -14,7 +14,7 @@ Until the first npm release, pin an exact GitHub commit SHA for reproducible
 installs:
 
 ```bash
-npm install github:a-funk/3dGraph#<commit-sha>
+npm install github:a-funk/3dGraph#8e5bb620eb3ea314a78ae077eef17453745fe64b
 ```
 
 Installing the moving default branch also works for experiments, but your
